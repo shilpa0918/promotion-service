@@ -1,0 +1,13 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/promotion
+    password: root
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    dialect: org.hibernate.dialect.PostgreSQL10Dialect
+application:
+  uniquePrecision: 1000000
+
