@@ -36,12 +36,6 @@ public class PromotionController {
         return new ResponseEntity(promotionResponse, HttpStatus.OK);
     }
 
-//    @GetMapping("/findExpiredPromotions/{customerUsername}")
-//    public ResponseEntity findExpiredPromotions(@PathVariable String customerUsername) {
-//        PromotionResponseByPromoCode promotionResponse = promotionService.findExpiredPromotions(customerUsername);
-//        return new ResponseEntity(promotionResponse, HttpStatus.OK);
-//    }
-
     @GetMapping("/validatePromotionCode/{promoCode}")
     public ResponseEntity validatePromotionCode(@PathVariable String promoCode) {
         String validatePromotionCodeStr = promotionService.validatePromotionCode(promoCode);

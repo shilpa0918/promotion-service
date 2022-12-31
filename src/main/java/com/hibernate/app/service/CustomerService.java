@@ -1,6 +1,7 @@
 package com.hibernate.app.service;
 
 import com.hibernate.app.entity.Customer;
+import com.hibernate.app.exception.CustomerDoesNotExistException;
 import com.hibernate.app.repo.CustomerRepo;
 import com.hibernate.app.request.CustomerRequest;
 import com.hibernate.app.response.CustomerResponse;
@@ -14,19 +15,18 @@ public class CustomerService {
     @Autowired
     CustomerRepo customerRepo;
 
-    @Value(value="${application.uniquePrecision}")
+    @Value(value = "${application.uniquePrecision}")
     Integer uniquePrecision;
 
     public CustomerResponse addCustomer(CustomerRequest customerRequest) {
         Customer customer = new Customer();
-        double cutomerId = uniquePrecision * Math.random();
+        double customerId = uniquePrecision * Math.random();
         try {
-            if(isCustomerPresent(cutomerId)){
+            if (isCustomerPresent(customerId)) {
                 double regeneratedCustomerId = uniquePrecision * Math.random();
-                if(!isCustomerPresent(regeneratedCustomerId)) customer.setCustomerId(regeneratedCustomerId);
+                if (!isCustomerPresent(regeneratedCustomerId)) customer.setCustomerId(regeneratedCustomerId);
                 else throw new Exception("There is some technical issue, please retry in 5 seconds");
-            }
-            else customer.setCustomerId(cutomerId);
+            } else customer.setCustomerId(customerId);
             customer.setCustomerName(customerRequest.getCustomerName());
             customer.setEmail(customerRequest.getEmail());
             customer.setPhone(customerRequest.getPhone());
@@ -65,8 +65,11 @@ public class CustomerService {
             System.out.println("this is username");
             customer = customerRepo.findByUserName(id);
         }
+        if(customer==null){
+            throw new CustomerDoesNotExistException();
+        }
         CustomerResponse customerResponse = new CustomerResponse();
-       // customerResponse.setCustomerId(customer.getCustomerId());
+        // customerResponse.setCustomerId(customer.getCustomerId());
         customerResponse.setCustomerName(customer.getCustomerName());
         customerResponse.setEmail(customer.getEmail());
         customerResponse.setPhone(customer.getPhone());
@@ -85,8 +88,9 @@ public class CustomerService {
             System.out.println("this is updated by username");
             customer = customerRepo.findByUserName(id);
         }
-        //   Customer customerData = new Customer();
-       // customer.setCustomerId(customerRequest.getCustomerId());
+        if(customer==null){
+            throw new CustomerDoesNotExistException();
+        }
         customer.setCustomerName(customerRequest.getCustomerName());
         customer.setEmail(customerRequest.getEmail());
         customer.setPhone(customerRequest.getPhone());
@@ -98,7 +102,7 @@ public class CustomerService {
     }
 
     public String deleteCustomer(String id) {
-        Customer customer ;
+        Customer customer;
         if (id.contains("@")) {
             System.out.println("this is deleted by email");
             customer = customerRepo.findByEmail(id);
@@ -107,6 +111,6 @@ public class CustomerService {
             customer = customerRepo.findByUserName(id);
         }
         customerRepo.delete(customer);
-        return id +" deleted successfully";
+        return id + " deleted successfully";
     }
 }
